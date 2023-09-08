@@ -68,10 +68,10 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         // Update the fields of the existing travel package with the provided data
         existingTravelPackage.setTravelPackageName(updatedTravelPackage.getTravelPackageName());
         existingTravelPackage.setPassengerCapacity(updatedTravelPackage.getPassengerCapacity());
-        if(updatedTravelPackage.getDestinations().stream().anyMatch(destination -> destination.getId() == null)){
-            throw new RuntimeException("At least one destination has a null id.");
-        }
-        existingTravelPackage.setDestinations(updatedTravelPackage.getDestinations());
+//        if(updatedTravelPackage.getDestinations().stream().anyMatch(destination -> destination.getId() == null)){
+//            throw new RuntimeException("At least one destination has a null id.");
+//        }
+//        existingTravelPackage.setDestinations(updatedTravelPackage.getDestinations());
         existingTravelPackage.setSeatAvailable(updatedTravelPackage.getSeatAvailable());
         return existingTravelPackage;
     }

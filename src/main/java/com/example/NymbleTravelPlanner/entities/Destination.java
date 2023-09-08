@@ -9,15 +9,12 @@ import javax.persistence.*;
 @Setter
 public class Destination {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
 
 
-    @ManyToOne( cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinColumn(name = "travelPackage_id")
-    private TravelPackage travelPackage;
 
 //    @OneToOne
 //    private Activity activities;

@@ -12,12 +12,17 @@ import java.util.List;
 @Data
 public class TravelPackage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String travelPackageName;
     private int passengerCapacity;
     private int numberOfPassengerEnrolled;
     private int seatAvailable;
-    @OneToMany(mappedBy = "travelPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "package_destinations", joinColumns = { @JoinColumn(name = "package_id") }, inverseJoinColumns = { @JoinColumn(name = "destination_id") })
     private List<Destination> destinations;
 }
