@@ -16,4 +16,7 @@ public class Activity {
     private String description;
     private double cost;
     private int capacity;
+
+//    @OneToOne(mappedBy = "activity") // Mapped by the activity field in Destination
+//    private Destination destination;
 }
