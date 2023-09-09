@@ -8,8 +8,6 @@ import com.example.NymbleTravelPlanner.repositories.TravelPackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -54,7 +52,7 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         Optional<TravelPackage> optionalExistingTravelPackage = travelPackageRepository.findById(id);
 
         if (optionalExistingTravelPackage.isPresent()) {
-            TravelPackage existingTravelPackage = getTravelPackage(updatedTravelPackage, optionalExistingTravelPackage);
+            TravelPackage existingTravelPackage = setNewTravelPackage(updatedTravelPackage, optionalExistingTravelPackage);
             return travelPackageRepository.save(existingTravelPackage);
         } else {
             // Handle the case where the travel package with the given ID is not found
@@ -62,17 +60,17 @@ public class TravelPackageServiceImpl implements TravelPackageService {
         }
     }
 
-    private static TravelPackage getTravelPackage(TravelPackage updatedTravelPackage, Optional<TravelPackage> optionalExistingTravelPackage) {
+    private static TravelPackage setNewTravelPackage(TravelPackage updatedTravelPackage, Optional<TravelPackage> optionalExistingTravelPackage) {
         TravelPackage existingTravelPackage = optionalExistingTravelPackage.get();
         // TODO: 07/09/23 can add more validation before saving in db 
         // Update the fields of the existing travel package with the provided data
         existingTravelPackage.setTravelPackageName(updatedTravelPackage.getTravelPackageName());
         existingTravelPackage.setPassengerCapacity(updatedTravelPackage.getPassengerCapacity());
-//        if(updatedTravelPackage.getDestinations().stream().anyMatch(destination -> destination.getId() == null)){
+//        if(updatedTravelPackage.getDestination().stream().anyMatch(destination -> destination.getId() == null)){
 //            throw new RuntimeException("At least one destination has a null id.");
 //        }
-//        existingTravelPackage.setDestinations(updatedTravelPackage.getDestinations());
-        existingTravelPackage.setSeatAvailable(updatedTravelPackage.getSeatAvailable());
+//        existingTravelPackage.setDestination(updatedTravelPackage.getDestination());
+//        existingTravelPackage.setSeatAvailable(updatedTravelPackage.getSeatAvailable());
         return existingTravelPackage;
     }
 
