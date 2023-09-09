@@ -13,119 +13,79 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TravelBookingServiceImpl implements TravelBookingService{
+public class TravelBookingServiceImpl implements TravelBookingService {
     @Autowired
-    TravelPackageRepository travelPackageRepository;
+    private TravelPackageRepository travelPackageRepository;
+
     @Autowired
-    PassengerRepository passengerRepository;
+    private PassengerRepository passengerRepository;
+
+    private static final double GOLD_DISCOUNT = 0.10;
 
     @Override
     public Passenger createBooking(BookingDto reqBookingDto) {
-        Optional<TravelPackage> travelPackage= travelPackageRepository.findById(reqBookingDto.getTravelPackageId());
-        Optional<Passenger> passenger=passengerRepository.findById(reqBookingDto.getPassengerId());
+        Optional<TravelPackage> travelPackageOpt = travelPackageRepository.findById(reqBookingDto.getTravelPackageId());
+        Optional<Passenger> passengerOpt = passengerRepository.findById(reqBookingDto.getPassengerId());
 
-        if(travelPackage.get().getSeatAvailable()>0){
-            travelPackage.get().getDestinations().forEach(
-                    it->checkDetinationCapicity(it.getActivities())
-            );
+        if (travelPackageOpt.isPresent() && passengerOpt.isPresent() && travelPackageOpt.get().getSeatAvailable() > 0) {
+            TravelPackage travelPackage = travelPackageOpt.get();
+            Passenger passenger = passengerOpt.get();
 
-           Passenger updatedPassenger=updatePassenger(travelPackage.get(),passenger.get());
-           TravelPackage updatedTravelPackage = updateTravelPackage(travelPackage).get();
-           travelPackageRepository.save(updatedTravelPackage);
-           passengerRepository.save(updatedPassenger);
-           return updatedPassenger;
-        }
-        else throw new NymbleTravelPlannerCommonException("It seems no seats are available in this package try other package");
+            List<TravelHistory> travelHistories = new ArrayList<>();
+            double totalPrice = 0;
 
+            for (Destination destination : travelPackage.getDestinations()) {
+                Activity activity = destination.getActivities();
+                checkDestinationCapacity(activity);
 
-    }
+                double activityCost = applyDiscount(passenger.getPassengerType(), activity.getCost());
+                totalPrice += activityCost;
 
-    private Passenger updatePassenger(TravelPackage travelPackage, Passenger passenger) {
-        List<TravelHistory> travelHistories=new ArrayList<>();
-        if(passenger.getPassengerType()== Passenger.PassengerType.GOLD){
-            double totalPrice=0;
-
-            for(Destination destination:travelPackage.getDestinations()){
-                totalPrice=  (destination.getActivities().getCost()-destination.getActivities().getCost()*0.10)+totalPrice;
-                TravelHistory travelHistory=new TravelHistory();
-                travelHistory.setActivityName(destination.getActivities().getName());
-                travelHistory.setActualPrice(destination.getActivities().getCost());
-                travelHistory.setPricePaid(destination.getActivities().getCost()-destination.getActivities().getCost()*0.10); //for gold customer 10% discount
+                TravelHistory travelHistory = new TravelHistory();
+                travelHistory.setActivityName(activity.getName());
+                travelHistory.setActualPrice(activity.getCost());
+                travelHistory.setPricePaid(activityCost);
                 travelHistory.setPackageName(travelPackage.getTravelPackageName());
                 travelHistory.setDestinationName(destination.getName());
                 travelHistory.setDestinationId(destination.getId());
-                travelHistory.setPackageName(travelPackage.getTravelPackageName());
                 travelHistories.add(travelHistory);
+
+                activity.setCapacity(activity.getCapacity() - 1);
             }
-            if(totalPrice>passenger.getBalance()){
-                throw new NymbleTravelPlannerCommonException("Your account doest not have sufficient balance to book this package");
+
+            if (totalPrice > passenger.getBalance()) {
+                throw new NymbleTravelPlannerCommonException("Your account does not have sufficient balance to book this package");
             }
-            else passenger.setBalance(passenger.getBalance()-totalPrice);
+
+            passenger.setBalance(passenger.getBalance() - totalPrice);
             passenger.setTravelHistory(travelHistories);
+
+            travelPackage.setSeatAvailable(travelPackage.getSeatAvailable() - 1);
+            travelPackage.setNumberOfPassengerEnrolled(travelPackage.getNumberOfPassengerEnrolled() + 1);
+
+            travelPackageRepository.save(travelPackage);
             return passenger;
-        }
-if(passenger.getPassengerType()== Passenger.PassengerType.STANDARD){
-    double totalPrice=0;
-
-    for(Destination destination:travelPackage.getDestinations()){
-        totalPrice=  destination.getActivities().getCost()+totalPrice;
-        TravelHistory travelHistory=new TravelHistory();
-        travelHistory.setActivityName(destination.getActivities().getName());
-        travelHistory.setActualPrice(destination.getActivities().getCost());
-        travelHistory.setPricePaid(destination.getActivities().getCost()); //for Standard 0% dicount
-        travelHistory.setPackageName(travelPackage.getTravelPackageName());
-        travelHistory.setDestinationName(destination.getName());
-        travelHistory.setDestinationId(destination.getId());
-        travelHistory.setPackageName(travelPackage.getTravelPackageName());
-        travelHistories.add(travelHistory);
-    }
-    if(totalPrice>passenger.getBalance()){
-        throw new NymbleTravelPlannerCommonException("Your account doest not have sufficient balance to book this travel package");
-    }
-    else passenger.setBalance(passenger.getBalance()-totalPrice);
-    passenger.setTravelHistory(travelHistories);
-    return passenger;
-
-}
-        if(passenger.getPassengerType()== Passenger.PassengerType.PREMIUM){
-            for(Destination destination:travelPackage.getDestinations()){
-                TravelHistory travelHistory=new TravelHistory();
-                travelHistory.setActivityName(destination.getActivities().getName());
-                travelHistory.setActualPrice(destination.getActivities().getCost());
-                travelHistory.setPricePaid(0); //for Premium paid 0
-                travelHistory.setPackageName(travelPackage.getTravelPackageName());
-                travelHistory.setDestinationName(destination.getName());
-                travelHistory.setDestinationId(destination.getId());
-                travelHistory.setPackageName(travelPackage.getTravelPackageName());
-                travelHistories.add(travelHistory);
-            }
-            return passenger;
-
-        }
-       return passenger;
-
-    }
-
-    private Optional<TravelPackage> updateTravelPackage(Optional<TravelPackage> travelPackage) {
-        //update package seat
-        travelPackage.get().setSeatAvailable(travelPackage.get().getSeatAvailable()-1);
-        travelPackage.get().setNumberOfPassengerEnrolled(travelPackage.get().getNumberOfPassengerEnrolled()+1);
-        List<Destination> updatedDestination= updateDetination(travelPackage.get().getDestinations());
-        travelPackage.get().setDestinations(updatedDestination);
-        return travelPackage;
-    }
-
-    private List<Destination> updateDetination(List<Destination> destinations) {
-        for (Destination destination : destinations) {
-            destination.getActivities().setCapacity(destination.getActivities().getCapacity()-1);
-        }
-        return destinations;
-    }
-
-    private void checkDetinationCapicity(Activity activity) {
-        if(activity.getCapacity()<=0){
-            throw new NymbleTravelPlannerCommonException("this "+ activity.getName() +" has reached its maximum booking");
+        } else {
+            throw new NymbleTravelPlannerCommonException("It seems no seats are available in this package or passenger not found");
         }
     }
 
+    private void checkDestinationCapacity(Activity activity) {
+        if (activity.getCapacity() <= 0) {
+            throw new NymbleTravelPlannerCommonException("This " + activity.getName() + " has reached its maximum booking");
+        }
+    }
+
+    private double applyDiscount(Passenger.PassengerType passengerType, double cost) {
+        switch (passengerType) {
+            case GOLD:
+                return cost - (cost * GOLD_DISCOUNT);
+            case STANDARD:
+                return cost;
+            case PREMIUM:
+                return 0; // Premium passengers pay 0 cost
+            default:
+                throw new NymbleTravelPlannerCommonException("Invalid passenger type");
+        }
+    }
 }
