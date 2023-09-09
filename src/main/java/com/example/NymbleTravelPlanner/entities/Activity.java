@@ -9,16 +9,11 @@ import javax.persistence.*;
 @Setter
 public class Activity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
     private String description;
     private double cost;
     private int capacity;
-
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "destination_id")
-//    private Destination destination;
-
 }

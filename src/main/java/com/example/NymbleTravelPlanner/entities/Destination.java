@@ -16,8 +16,9 @@ public class Destination {
 
     private String name;
 
-//    @OneToOne
-//    private Activity activities;
+    @OneToOne(targetEntity = Activity.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "destination_id",referencedColumnName = "destination_id")
+    private Activity activities;
 
 }
 
