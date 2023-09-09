@@ -7,17 +7,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 @Getter
 @Setter
-@Data
 public class TravelPackage {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "travelPackage_id")
     private Long id;
     private String travelPackageName;
     private int passengerCapacity;
     private int numberOfPassengerEnrolled;
     private int seatAvailable;
-    @OneToMany(mappedBy = "travelPackage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Destination> destinations;
+    @OneToMany(targetEntity = Destination.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "travelPackage_id",referencedColumnName = "travelPackage_id")
+    private List<Destination> destinations=new ArrayList<>();
 }

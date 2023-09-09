@@ -7,20 +7,18 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
+@Data
 public class Destination {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "destination_id")
     private Long id;
 
     private String name;
 
-
-    @ManyToOne( cascade = CascadeType.ALL,fetch = FetchType.LAZY)
-    @JoinColumn(name = "travelPackage_id")
-    private TravelPackage travelPackage;
-
-//    @OneToOne
-//    private Activity activities;
+    @OneToOne(targetEntity = Activity.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "activity_id")
+    private Activity activities;
 
 }
 
