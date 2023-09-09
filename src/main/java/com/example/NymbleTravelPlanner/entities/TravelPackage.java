@@ -8,6 +8,8 @@ import java.util.List;
 
 @Entity
 @Data
+@Getter
+@Setter
 public class TravelPackage {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,12 +24,5 @@ public class TravelPackage {
 
     @OneToMany(targetEntity = Destination.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "travelPackage_id",referencedColumnName = "travelPackage_id")
-    private List<Destination> destination=new ArrayList<>();
-    public List<Destination> getDestinations() {
-        return destination;
-    }
-
-    public void setDestinations(List<Destination> destinations) {
-        this.destination = destinations;
-    }
+    private List<Destination> destinations=new ArrayList<>();
 }

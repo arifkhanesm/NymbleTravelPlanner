@@ -16,11 +16,6 @@ public class Destination {
 
     private String name;
 
-
-    @ManyToOne( cascade = CascadeType.ALL)
-    @JoinColumn(name = "travel_package_id")
-    private TravelPackage travelPackage;
-
 //    @OneToOne
 //    private Activity activities;
 
