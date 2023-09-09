@@ -19,9 +19,6 @@ public class TravelPackage {
     private int passengerCapacity;
     private int numberOfPassengerEnrolled;
     private int seatAvailable;
-
-
-
     @OneToMany(targetEntity = Destination.class, cascade = CascadeType.ALL)
     @JoinColumn(name = "travelPackage_id",referencedColumnName = "travelPackage_id")
     private List<Destination> destinations=new ArrayList<>();
