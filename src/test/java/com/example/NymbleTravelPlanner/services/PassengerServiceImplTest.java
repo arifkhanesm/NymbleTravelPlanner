@@ -25,13 +25,7 @@ class PassengerServiceImplTest {
 @Mock
 private PassengerRepository passengerRepository;
 
-//    private Passenger passenger;
-
-   // @BeforeEach
     void setUp() {
-        // Initialize a test passenger
-
-        // Mock behavior of repository methods
         when(passengerRepository.findAll()).thenReturn(new ArrayList<>());
         when(passengerRepository.findById(1L)).thenReturn(Optional.of(obj()));
         when(passengerRepository.existsById(1L)).thenReturn(true);
@@ -42,7 +36,7 @@ private PassengerRepository passengerRepository;
         passenger.setName("Test Passenger");
         passenger.setPassengerNumber("+918388388383");
         passenger.setPassengerType(Passenger.PassengerType.GOLD);
-return passenger;
+        return passenger;
     }
 
     @Test
@@ -52,7 +46,7 @@ return passenger;
 
         List<Passenger> passengers = passengerService.getAllPassengers();
         assertNotNull(passengers);
-        assertEquals(0, passengers.size()); // Since we mocked an empty list
+        assertEquals(0, passengers.size());
     }
 
     @Test
@@ -96,7 +90,6 @@ return passenger;
         when(passengerRepository.save(updatedPassenger)).thenReturn(updatedPassenger);
 
         Passenger result = passengerService.updatePassenger(1L, updatedPassenger);
-       // assertNotNull(result);
         assertEquals(updatedPassenger, result);
     }
     @Test

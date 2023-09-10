@@ -35,12 +35,10 @@ public class TravelBookingServiceImplTest {
 
     @Test
     public void testCreateBooking_SuccessfulBooking() {
-        // Create a BookingDto
         BookingDto bookingDto = new BookingDto();
         bookingDto.setTravelPackageId(1L);
         bookingDto.setPassengerId(2L);
 
-        // Create mock objects
         TravelPackage mockTravelPackage = new TravelPackage();
         mockTravelPackage.setSeatAvailable(1);
         mockTravelPackage.setNumberOfPassengerEnrolled(0);
@@ -73,12 +71,10 @@ public class TravelBookingServiceImplTest {
 
     @Test
     public void testCreateBooking_InsufficientBalance() {
-        // Create a BookingDto
         BookingDto bookingDto = new BookingDto();
         bookingDto.setTravelPackageId(1L);
         bookingDto.setPassengerId(2L);
 
-        // Create mock objects
         TravelPackage mockTravelPackage = new TravelPackage();
         Destination destination = new Destination();
         Activity activity = new Activity();
@@ -95,24 +91,20 @@ public class TravelBookingServiceImplTest {
         when(travelPackageRepository.findById(1L)).thenReturn(Optional.of(mockTravelPackage));
         when(passengerRepository.findById(2L)).thenReturn(Optional.of(mockPassenger));
 
-        // Call the createBooking method and expect an exception
         assertThrows(NymbleTravelPlannerCommonException.class, () -> travelBookingService.createBooking(bookingDto));
     }
 
     @Test
     public void testCreateBooking_NoSeatsAvailable() {
-        // Create a BookingDto
         BookingDto bookingDto = new BookingDto();
         bookingDto.setTravelPackageId(1L);
         bookingDto.setPassengerId(2L);
 
-        // Create mock objects
         TravelPackage mockTravelPackage = new TravelPackage();
         mockTravelPackage.setSeatAvailable(0);
 
         when(travelPackageRepository.findById(1L)).thenReturn(Optional.of(mockTravelPackage));
 
-        // Call the createBooking method and expect an exception
         assertThrows(NymbleTravelPlannerCommonException.class, () -> travelBookingService.createBooking(bookingDto));
     }
 
