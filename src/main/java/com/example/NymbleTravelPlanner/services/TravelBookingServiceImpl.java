@@ -22,6 +22,11 @@ public class TravelBookingServiceImpl implements TravelBookingService {
 
     private static final double GOLD_DISCOUNT = 0.10;
 
+    /**
+     * crete new booking ny taking reqBookingDto
+     * @param reqBookingDto
+     * @return
+     */
     @Override
     public Passenger createBooking(BookingDto reqBookingDto) {
         Optional<TravelPackage> travelPackageOpt = travelPackageRepository.findById(reqBookingDto.getTravelPackageId());
@@ -70,12 +75,24 @@ public class TravelBookingServiceImpl implements TravelBookingService {
         }
     }
 
+    /**
+     * check if the destination has the capacity to make the booking or not
+     * @param activity
+     */
     private void checkDestinationCapacity(Activity activity) {
         if (activity.getCapacity() <= 0) {
             throw new NymbleTravelPlannerCommonException("This " + activity.getName() + " has reached its maximum booking");
         }
     }
 
+    /**
+     * Check PassengerType if gold give 10% discount
+     * If Standard 0% discount
+     * PREMIUM customer will not be charged any money
+     * @param passengerType
+     * @param cost
+     * @return
+     */
     private double applyDiscount(Passenger.PassengerType passengerType, double cost) {
         switch (passengerType) {
             case GOLD:

@@ -26,7 +26,7 @@ public class Passenger {
 
     // Enum for passenger types: Standard, Gold, Premium
     public enum PassengerType {
-        STANDARD, GOLD, PREMIUM
+        STANDARD, GOLD, UNKNOWN, PREMIUM
     }
 
     @Enumerated(EnumType.STRING)

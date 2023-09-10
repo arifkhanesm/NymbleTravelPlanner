@@ -21,6 +21,14 @@ private  final TravelBookingService travelBookingService;
         this.travelBookingService = travelBookingService;
     }
 
+    /**
+     * create booking for the application
+     * It checks if uer has the enough balance or not
+     * checks and applied discounts for desired passenger
+     *
+     * @param reqBookingDto
+     * @return
+     */
     @PostMapping
     public ResponseEntity<Passenger> createPassenger(@RequestBody BookingDto reqBookingDto) {
                Passenger createdBooking = travelBookingService.createBooking(reqBookingDto);

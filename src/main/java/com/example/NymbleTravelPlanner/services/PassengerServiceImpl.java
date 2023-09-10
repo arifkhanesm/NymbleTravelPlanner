@@ -37,13 +37,19 @@ public class PassengerServiceImpl implements PassengerService {
         }
     }
 
+    /**
+     * Update Passenger if it finds id in db
+     * @param id
+     * @param updatedPassenger
+     * @return
+     */
     @Override
     public Passenger updatePassenger(Long id, Passenger updatedPassenger) {
         if (passengerRepository.existsById(id)) {
             updatedPassenger.setId(id);
             return passengerRepository.save(updatedPassenger);
         }
-        return null; // Handle not found case
+        else throw new NymbleTravelPlannerCommonException("User does not exist");
     }
 
     @Override
